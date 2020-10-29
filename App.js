@@ -30,20 +30,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AddItemModal from './components/modals/AddItemModal';
 import AddMomsNumber from './components/modals/AddMomsNumber';
 
-const exitIconStyle = {
-  top: 5,
-  position: 'absolute',
-  color: 'white',
-  padding: 10,
-};
-
-const modalTitleStyle = {
-  color: 'white',
-  fontWeight: 'bold',
-  fontSize: 40,
-  width: '98%',
-};
-
 const App = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [momsNumber, setMomsNumber] = useState('');
@@ -94,6 +80,7 @@ const App = () => {
           getNumberModalVisible={getNumberModalVisible}
           momsNumber={momsNumber}
           setMomsNumber={setMomsNumber}
+          setNumberModalVisible={setNumberModalVisible}
         />
       </MainContainer>
     </>

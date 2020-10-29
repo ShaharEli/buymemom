@@ -1,8 +1,15 @@
-import React from 'react';
-import {View, Text, Alert, Modal, TextInput} from 'react-native';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  Alert,
+  Modal,
+  TextInput,
+  PermissionsAndroid,
+} from 'react-native';
 import styled from 'styled-components';
-import Icon from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {selectContactPhone} from 'react-native-select-contact';
 
 const modalTitleStyle = {
   color: 'white',
@@ -15,15 +22,58 @@ export default function AddMomsNumber({
   getNumberModalVisible,
   momsNumber,
   setMomsNumber,
+  setNumberModalVisible,
 }) {
-  const handleNumberEdit = async () => {
+  async function getPhoneNumber() {
     try {
-      if (momsNumber.length < 9) {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+        {
+          title: 'buymemom App Contacts Permission',
+          message:
+            'buymemom App needs access to your Contacts ' +
+            'so you can send text to them.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      } else {
+        console.log('contacts permission denied');
+        setPremissionNotGranted(true);
+        return;
+      }
+    } catch (err) {
+      console.log(err.message);
+      setPremissionNotGranted(true);
+      return;
+    }
+
+    return selectContactPhone().then((selection) => {
+      if (!selection) {
+        return null;
+      }
+
+      let {contact, selectedPhone} = selection;
+      console.log(
+        `Selected ${selectedPhone.type} phone number ${selectedPhone.number} from ${contact.name}`,
+      );
+      return selectedPhone.number;
+    });
+  }
+  const [permissionNotGranted, setPremissionNotGranted] = useState(false);
+  const [typedMomsNumber, setTypedMomsNumber] = useState('');
+
+  const handleNumberEditEnd = async () => {
+    try {
+      if (typedMomsNumber.length < 9) {
         throw new Error();
       }
-      Alert.alert('Yayy', 'Succesfully added moms number');
-      await AsyncStorage.setItem('momsNumber', momsNumber);
+      await AsyncStorage.setItem('momsNumber', typedMomsNumber);
       setNumberModalVisible(false);
+      setMomsNumber(typedMomsNumber);
+      Alert.alert('Yayy', 'Succesfully added moms number');
 
       // Linking.openURL(
       //   'whatsapp://send?text=' + 'this.state.msg ' + '&phone=972' + momsNumber,
@@ -34,6 +84,25 @@ export default function AddMomsNumber({
     }
   };
 
+  const handleNumberEdit = async () => {
+    try {
+      const momsNumber = await getPhoneNumber();
+      if (momsNumber.length < 9) {
+        throw new Error();
+      }
+      await AsyncStorage.setItem('momsNumber', momsNumber);
+      setNumberModalVisible(false);
+      setMomsNumber(momsNumber);
+      Alert.alert('Yayy', 'Succesfully added moms number');
+
+      // Linking.openURL(
+      //   'whatsapp://send?text=' + 'this.state.msg ' + '&phone=972' + momsNumber,
+      // );
+    } catch (e) {
+      setMomsNumber('');
+      Alert.alert('Error', 'Please enter valid number');
+    }
+  };
   return (
     <Modal
       animationType="slide"
@@ -43,14 +112,20 @@ export default function AddMomsNumber({
         <MainModalContainer>
           <Text style={modalTitleStyle}>Change mom`s number</Text>
           <ModalContainer>
-            <MomsNumberInput>
-              <TextInput
-                placeholder="Enter mom`s number...."
-                onEndEditing={handleNumberEdit}
-                value={momsNumber}
-                onChangeText={(e) => setMomsNumber(e)}
-              />
-            </MomsNumberInput>
+            {!permissionNotGranted ? (
+              <ChangeNumberButton onPress={handleNumberEdit}>
+                <Text>Click here to choose contact</Text>
+              </ChangeNumberButton>
+            ) : (
+              <MomsNumberInput>
+                <TextInput
+                  value={typedMomsNumber}
+                  onChangeText={(e) => setTypedMomsNumber(e)}
+                  onEndEditing={handleNumberEditEnd}
+                  placeholder="Enter moms number..."
+                />
+              </MomsNumberInput>
+            )}
           </ModalContainer>
         </MainModalContainer>
       </>
@@ -73,4 +148,11 @@ const MainModalContainer = styled.SafeAreaView`
 const ModalContainer = styled.View`
   flex: 1;
   justify-content: center;
+`;
+
+const ChangeNumberButton = styled.TouchableOpacity`
+  align-self: center;
+  padding: 10px;
+  background-color: white;
+  border-radius: 50px;
 `;

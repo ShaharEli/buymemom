@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, Alert, Modal} from 'react-native';
+import {View, Text, Alert, Modal, TextInput} from 'react-native';
 import styled from 'styled-components';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -8,6 +8,14 @@ const modalTitleStyle = {
   fontWeight: 'bold',
   fontSize: 40,
   width: '98%',
+};
+
+const exitIconStyle = {
+  top: 5,
+  position: 'absolute',
+  color: 'white',
+  padding: 10,
+  right: 10,
 };
 
 export default function AddItemModal({modalVisible, setModalVisible}) {
