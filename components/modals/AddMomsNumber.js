@@ -20,7 +20,6 @@ const modalTitleStyle = {
 
 export default function AddMomsNumber({
   getNumberModalVisible,
-  momsNumber,
   setMomsNumber,
   setNumberModalVisible,
 }) {
@@ -28,37 +27,23 @@ export default function AddMomsNumber({
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-        {
-          title: 'buymemom App Contacts Permission',
-          message:
-            'buymemom App needs access to your Contacts ' +
-            'so you can send text to them.',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
       } else {
-        console.log('contacts permission denied');
         setPremissionNotGranted(true);
         return;
       }
     } catch (err) {
-      console.log(err.message);
       setPremissionNotGranted(true);
       return;
     }
 
     return selectContactPhone().then((selection) => {
       if (!selection) {
-        return null;
+        return;
       }
 
-      let {contact, selectedPhone} = selection;
-      console.log(
-        `Selected ${selectedPhone.type} phone number ${selectedPhone.number} from ${contact.name}`,
-      );
+      let {selectedPhone} = selection;
       return selectedPhone.number;
     });
   }

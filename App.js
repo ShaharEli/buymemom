@@ -36,6 +36,16 @@ const App = () => {
   const [getNumberModalVisible, setNumberModalVisible] = useState(true);
   const [listOfItems, setListOfItems] = useState([]);
 
+  const handleSetListOfItems = async (item) => {
+    setListOfItems((prev) => [item, ...prev]);
+    await AsyncStorage.setItem(
+      'listOfItems',
+      [item, ...prev]
+        .map((item) => JSON.stringify(item))
+        .join('#$&splitingSpot&$#'),
+    );
+  };
+
   useEffect(() => {
     (async () => {
       try {
@@ -45,6 +55,13 @@ const App = () => {
             setMomsNumber(previousMomsNumber);
             setNumberModalVisible(false);
           }
+        }
+        let previousItemsList = await AsyncStorage.getItem('listOfItem');
+        if (previousItemsList) {
+          previousItemsList = previousItemsList
+            .split('#$&splitingSpot&$#')
+            .map((item) => JSON.parse(item));
+          setListOfItems(previousItemsList);
         }
       } catch (e) {
         // error reading value
@@ -73,6 +90,7 @@ const App = () => {
           </ButtonContainer>
         </View>
         <AddItemModal
+          handleSetListOfItems={handleSetListOfItems}
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
         />
