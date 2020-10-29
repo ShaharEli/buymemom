@@ -50,9 +50,11 @@ const App = () => {
     (async () => {
       try {
         const previousMomsNumber = await AsyncStorage.getItem('momsNumber');
-        if (previousMomsNumber !== null) {
+        if (previousMomsNumber !== null ) {
+         if(previousMomsNumber.length>8){
           setMomsNumber(previousMomsNumber);
           setNumberModalVisible(false);
+}
         }
       } catch (e) {
         // error reading value
