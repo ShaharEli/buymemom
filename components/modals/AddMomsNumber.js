@@ -55,14 +55,10 @@ export default function AddMomsNumber({
       if (typedMomsNumber.length < 9) {
         throw new Error();
       }
-      await AsyncStorage.setItem('momsNumber', typedMomsNumber);
+      await AsyncStorage.setItem('momsNumber', '972' + typedMomsNumber);
       setNumberModalVisible(false);
-      setMomsNumber(typedMomsNumber);
+      setMomsNumber('972' + typedMomsNumber);
       Alert.alert('Yayy', 'Succesfully added moms number');
-
-      // Linking.openURL(
-      //   'whatsapp://send?text=' + 'this.state.msg ' + '&phone=972' + momsNumber,
-      // );
     } catch (e) {
       setMomsNumber('');
       Alert.alert('Error', 'Please enter valid number');
@@ -79,10 +75,6 @@ export default function AddMomsNumber({
       setNumberModalVisible(false);
       setMomsNumber(momsNumber);
       Alert.alert('Yayy', 'Succesfully added moms number');
-
-      // Linking.openURL(
-      //   'whatsapp://send?text=' + 'this.state.msg ' + '&phone=972' + momsNumber,
-      // );
     } catch (e) {
       setMomsNumber('');
       Alert.alert('Error', 'Please enter valid number');

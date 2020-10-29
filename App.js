@@ -8,6 +8,7 @@
 
 import React, {useState, useEffect} from 'react';
 import {
+  ImageBackground,
   SafeAreaView,
   StyleSheet,
   ScrollView,
@@ -25,6 +26,8 @@ import {
 import ListItem from './components/ListItem';
 import styled from 'styled-components';
 import Icon from 'react-native-vector-icons/Ionicons';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+
 import {MAX_WIDTH, MAX_HEIGHT} from './helpers/Helpers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AddItemModal from './components/modals/AddItemModal';
@@ -84,7 +87,7 @@ const App = () => {
           previousItemsList = previousItemsList
             .split('#$&splitingSpot&$#')
             .map((item) => JSON.parse(item));
-          setListOfItems(...previousItemsList);
+          setListOfItems(previousItemsList);
         }
       } catch (e) {}
     })();
@@ -95,47 +98,79 @@ const App = () => {
     setNumberModalVisible(true);
   };
 
+  const sendToMom = () => {
+    if (chosenItems.length < 1) {
+      Alert.alert('Hey!', 'please choose items first');
+    } else {
+      const filesToSend = chosenItems
+        .map((item) => {
+          const amount = Number(item.amount);
+          if (amount > 1) {
+            return item.amount + ' ' + item.item + 's';
+          } else {
+            return item.amount + ' ' + item.item;
+          }
+        })
+        .join('\n');
+      Linking.openURL(
+        'whatsapp://send?text=' +
+          'Hi mom can you buy me:\n' +
+          filesToSend +
+          '&phone=' +
+          momsNumber,
+      );
+    }
+  };
+
   return (
     <>
-      <MainContainer>
-        <TouchableOpacity>
-          <MainTitle>Welcome to Buy Me Mom</MainTitle>
-        </TouchableOpacity>
-        <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+      <ImageBackground
+        source={require('./assets/bg.jpeg')}
+        style={{flex: 1, resizeMode: 'cover'}}>
+        <MainContainer>
+          <TouchableOpacity>
+            <MainTitle>Welcome to Buy Me Mom</MainTitle>
+          </TouchableOpacity>
           <ButtonContainer onPress={handleEditMomsNumber}>
-            <ButtonText>change current number</ButtonText>
+            <ButtonText>Change Current Number</ButtonText>
           </ButtonContainer>
           <ButtonContainer onPress={() => setModalVisible(true)}>
-            <Icon name="add" size={24} />
-            <ButtonText color="white">add new item</ButtonText>
+            <FontAwesomeIcon
+              name="plus"
+              size={30}
+              color="white"
+              style={{marginLeft: 2, marginRight: 4}}
+            />
+            <ButtonText color="white">New Item</ButtonText>
           </ButtonContainer>
-        </View>
-        <AddItemModal
-          handleSetListOfItems={handleSetListOfItems}
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
-        />
-        <AddMomsNumber
-          getNumberModalVisible={getNumberModalVisible}
-          momsNumber={momsNumber}
-          setMomsNumber={setMomsNumber}
-          setNumberModalVisible={setNumberModalVisible}
-        />
-        <ScrollView style={{marginTop: 50}}>
-          {listOfItems.map((item, index) => {
-            return (
-              <ListItem
-                key={index}
-                item={item}
-                setChosenItems={setChosenItems}
-                setListOfItems={setListOfItems}
-                handleSetListOfItems={handleSetListOfItems}
-              />
-            );
-          })}
-        </ScrollView>
-        <Button title="Send to mom" />
-      </MainContainer>
+
+          <AddItemModal
+            handleSetListOfItems={handleSetListOfItems}
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+          />
+          <AddMomsNumber
+            getNumberModalVisible={getNumberModalVisible}
+            momsNumber={momsNumber}
+            setMomsNumber={setMomsNumber}
+            setNumberModalVisible={setNumberModalVisible}
+          />
+          <ScrollView style={{marginTop: 30}}>
+            {listOfItems.map((item, index) => {
+              return (
+                <ListItem
+                  key={index}
+                  item={item}
+                  setChosenItems={setChosenItems}
+                  setListOfItems={setListOfItems}
+                  handleSetListOfItems={handleSetListOfItems}
+                />
+              );
+            })}
+          </ScrollView>
+          <Button title="Send to mom" onPress={sendToMom} />
+        </MainContainer>
+      </ImageBackground>
     </>
   );
 };
@@ -143,8 +178,10 @@ const App = () => {
 export default App;
 
 const MainContainer = styled.SafeAreaView`
-  background-color: #0093e9;
+  /* background-color: #0093e9; */
   flex: 1;
+  margin-top: 20px;
+  color: whitesmoke;
 `;
 
 const MainTitle = styled.Text`
@@ -155,7 +192,7 @@ const MainTitle = styled.Text`
 `;
 
 const ButtonContainer = styled.TouchableOpacity`
-  justify-content: center;
+  justify-content: space-around;
   background-color: ${(props) =>
     props.bgColor ? props.bgColor : 'rgba(2,25,20,0.9)'};
   text-align: center;
@@ -163,13 +200,13 @@ const ButtonContainer = styled.TouchableOpacity`
   margin-top: 30px;
   border-radius: 10px;
   padding: 20px 10px;
-  width: 40%;
+  width: auto;
   align-self: center;
 `;
 
 const ButtonText = styled.Text`
   color: ${(props) => (props.color ? props.color : 'white')};
-  font-size: 16px;
+  font-size: 24px;
   /* font-size: inherit;
   font-family: inherit; */
 `;

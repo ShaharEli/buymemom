@@ -38,16 +38,21 @@ export default function ListItem({
 
   return (
     <MainItemListContainer selected={selected}>
-      <ListItemContainer selected={selected} onPress={handleSelect}>
+      <ListItemContainer onPress={handleSelect}>
         <View>
-          <Text>{item.amount}</Text>
+          <ListItemText>{item.amount}</ListItemText>
         </View>
         <View>
-          <Text>{item.item}</Text>
+          <ListItemText>{item.item}</ListItemText>
         </View>
-        <Text></Text>
       </ListItemContainer>
-      <Icon name="trash" size={24} color="red" onPress={handleRemove} />
+      <Icon
+        name="trash"
+        size={24}
+        color="red"
+        onPress={handleRemove}
+        style={{marginLeft: 8, marginRight: 8}}
+      />
     </MainItemListContainer>
   );
 }
@@ -56,6 +61,11 @@ const ListItemContainer = styled.TouchableOpacity`
   flex-direction: row;
   justify-content: space-around;
   width: 90%;
+  shadow-color: red;
+  shadow-offset: 0px 2px;
+  shadow-opacity: 0.8;
+  shadow-radius: 12px;
+  elevation: 3;
 `;
 
 const MainItemListContainer = styled.View`
@@ -63,10 +73,17 @@ const MainItemListContainer = styled.View`
   width: 90%;
   margin-top: 15px;
   align-items: center;
-  background-color: ${(props) => (props.selected ? 'green' : 'blue')};
+  background-color: ${(props) =>
+    props.selected ? 'green' : 'rgba(10,12,10,0.92)'};
   padding: 15px;
   border-radius: 50px;
   align-self: center;
   padding-left: 15px;
-  background-color: ${(props) => (props.selected ? 'green' : 'blue')};
+`;
+
+const ListItemText = styled.Text`
+  color: white;
+  font-size: 15px;
+  font-style: italic;
+  text-align: left;
 `;
