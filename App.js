@@ -22,7 +22,7 @@ import {
   Alert,
   Linking,
 } from 'react-native';
-
+import ListItem from './components/ListItem';
 import styled from 'styled-components';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {MAX_WIDTH, MAX_HEIGHT} from './helpers/Helpers';
@@ -30,22 +30,45 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AddItemModal from './components/modals/AddItemModal';
 import AddMomsNumber from './components/modals/AddMomsNumber';
 
+const filterFunction = (item, itemToCheck) => {
+  if (item.item === itemToCheck.item) {
+    if (item.amount === itemToCheck.amount) {
+      return false;
+    }
+  }
+  return true;
+};
+
 const App = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [momsNumber, setMomsNumber] = useState('');
   const [getNumberModalVisible, setNumberModalVisible] = useState(true);
   const [listOfItems, setListOfItems] = useState([]);
+  const [chosenItems, setChosenItems] = useState([]);
 
-  const handleSetListOfItems = async (item) => {
-    setListOfItems((prev) => [item, ...prev]);
-    await AsyncStorage.setItem(
-      'listOfItems',
-      [item, ...prev]
-        .map((item) => JSON.stringify(item))
-        .join('#$&splitingSpot&$#'),
-    );
+  const handleSetListOfItems = async (item, method = 'post') => {
+    if (method === 'delete') {
+      const filteresList = listOfItems.filter((prevItem) =>
+        filterFunction(prevItem, item),
+      );
+      setListOfItems(filteresList);
+      await AsyncStorage.setItem(
+        'listOfItems',
+        [filteresList]
+          .map((item) => JSON.stringify(item))
+          .join('#$&splitingSpot&$#'),
+      );
+    } else {
+      setListOfItems((prev) => [item, ...prev]);
+      await AsyncStorage.setItem(
+        'listOfItems',
+        [item, ...listOfItems]
+          .map((item) => JSON.stringify(item))
+          .join('#$&splitingSpot&$#'),
+      );
+      setModalVisible(false);
+    }
   };
-
   useEffect(() => {
     (async () => {
       try {
@@ -56,16 +79,14 @@ const App = () => {
             setNumberModalVisible(false);
           }
         }
-        let previousItemsList = await AsyncStorage.getItem('listOfItem');
+        let previousItemsList = await AsyncStorage.getItem('listOfItems');
         if (previousItemsList) {
           previousItemsList = previousItemsList
             .split('#$&splitingSpot&$#')
             .map((item) => JSON.parse(item));
-          setListOfItems(previousItemsList);
+          setListOfItems(...previousItemsList);
         }
-      } catch (e) {
-        // error reading value
-      }
+      } catch (e) {}
     })();
   }, []);
 
@@ -81,12 +102,12 @@ const App = () => {
           <MainTitle>Welcome to Buy Me Mom</MainTitle>
         </TouchableOpacity>
         <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-          <ButtonContainer numberButton={true} onPress={handleEditMomsNumber}>
-            <Text>change current number</Text>
+          <ButtonContainer onPress={handleEditMomsNumber}>
+            <ButtonText>change current number</ButtonText>
           </ButtonContainer>
           <ButtonContainer onPress={() => setModalVisible(true)}>
             <Icon name="add" size={24} />
-            <Text>add new item</Text>
+            <ButtonText color="white">add new item</ButtonText>
           </ButtonContainer>
         </View>
         <AddItemModal
@@ -100,6 +121,20 @@ const App = () => {
           setMomsNumber={setMomsNumber}
           setNumberModalVisible={setNumberModalVisible}
         />
+        <ScrollView style={{marginTop: 50}}>
+          {listOfItems.map((item, index) => {
+            return (
+              <ListItem
+                key={index}
+                item={item}
+                setChosenItems={setChosenItems}
+                setListOfItems={setListOfItems}
+                handleSetListOfItems={handleSetListOfItems}
+              />
+            );
+          })}
+        </ScrollView>
+        <Button title="Send to mom" />
       </MainContainer>
     </>
   );
@@ -121,13 +156,20 @@ const MainTitle = styled.Text`
 
 const ButtonContainer = styled.TouchableOpacity`
   justify-content: center;
+  background-color: ${(props) =>
+    props.bgColor ? props.bgColor : 'rgba(2,25,20,0.9)'};
   text-align: center;
   flex-direction: row;
   margin-top: 30px;
-  background-color: green;
   border-radius: 10px;
   padding: 20px 10px;
   width: 40%;
   align-self: center;
-  background-color: ${(props) => (props.numberButton ? '#858BF2' : '#F2D64B')};
+`;
+
+const ButtonText = styled.Text`
+  color: ${(props) => (props.color ? props.color : 'white')};
+  font-size: 16px;
+  /* font-size: inherit;
+  font-family: inherit; */
 `;

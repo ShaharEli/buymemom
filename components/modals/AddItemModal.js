@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, Text, Alert, Modal, TextInput} from 'react-native';
+import {View, Text, Alert, Modal, TextInput, Button} from 'react-native';
 import styled from 'styled-components';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -15,7 +15,7 @@ const exitIconStyle = {
   position: 'absolute',
   color: 'white',
   padding: 10,
-  //   right: 10,
+  right: 10,
 };
 
 export default function AddItemModal({
@@ -28,8 +28,10 @@ export default function AddItemModal({
   const handleSubmit = () => {
     setItemAmount(itemAmount.replace(/[^0-9]/g, ''));
     const correctNumber = itemAmount.replace(/[^0-9]/g, '');
-    if (itemTitle.length > 2) {
-      handleSetListOfItems({item: itemTitle, amount: itemAmount});
+    if (itemTitle.length > 1 && correctNumber.length > 0) {
+      handleSetListOfItems({item: itemTitle, amount: correctNumber});
+      setItemAmount('');
+      setItemTitle('');
     } else {
       Alert.alert('Error', 'Please enter valid item');
     }
@@ -64,6 +66,7 @@ export default function AddItemModal({
               </AddItemInput>
             </View>
           </ModalContainer>
+          <Button title="Add item" onPress={handleSubmit} />
         </ModalAndExitContainer>
       </>
     </Modal>
