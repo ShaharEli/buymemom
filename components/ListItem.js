@@ -3,15 +3,7 @@ import {View, TouchableOpacity} from 'react-native';
 import styled from 'styled-components';
 import Icon from 'react-native-vector-icons/Ionicons';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-
-const filterFunction = (item, itemToCheck) => {
-  if (item.item === itemToCheck.item) {
-    if (item.amount === itemToCheck.amount) {
-      return false;
-    }
-  }
-  return true;
-};
+import {filterFunction} from '../helpers/Helpers';
 
 export default function ListItem({
   changeAmount,

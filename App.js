@@ -10,16 +10,13 @@ import React, {useState, useEffect} from 'react';
 import {
   ImageBackground,
   SafeAreaView,
-  StyleSheet,
   ScrollView,
   View,
   Text,
-  StatusBar,
   TouchableOpacity,
   Button,
   Modal,
   TouchableHighlight,
-  TextInput,
   Alert,
   Linking,
 } from 'react-native';
@@ -27,20 +24,11 @@ import ListItem from './components/ListItem';
 import styled from 'styled-components';
 import Icon from 'react-native-vector-icons/Ionicons';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-
 import {MAX_WIDTH, MAX_HEIGHT} from './helpers/Helpers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AddItemModal from './components/modals/AddItemModal';
 import AddMomsNumber from './components/modals/AddMomsNumber';
-
-const filterFunction = (item, itemToCheck) => {
-  if (item.item === itemToCheck.item) {
-    if (item.amount === itemToCheck.amount) {
-      return false;
-    }
-  }
-  return true;
-};
+import {filterFunction, saveToStorage} from './helpers/Helpers';
 
 const App = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -54,25 +42,15 @@ const App = () => {
       const filteredChosenItems = chosenItems.filter((prevItem) =>
         filterFunction(prevItem, item),
       );
-      const filteresList = listOfItems.filter((prevItem) =>
+      const filteredList = listOfItems.filter((prevItem) =>
         filterFunction(prevItem, item),
       );
       setChosenItems(filteredChosenItems);
-      setListOfItems(filteresList);
-      await AsyncStorage.setItem(
-        'listOfItems',
-        filteresList
-          .map((item) => JSON.stringify(item))
-          .join('#$&splitingSpot&$#'),
-      );
+      setListOfItems(filteredList);
+      await saveToStorage('listOfItems', filteredList);
     } else {
       setListOfItems((prev) => [item, ...prev]);
-      await AsyncStorage.setItem(
-        'listOfItems',
-        [item, ...listOfItems]
-          .map((item) => JSON.stringify(item))
-          .join('#$&splitingSpot&$#'),
-      );
+      saveToStorage('listOfItems', [item, ...listOfItems]);
       setModalVisible(false);
     }
   };
@@ -89,12 +67,7 @@ const App = () => {
         return itemToCheck;
       });
       setListOfItems(incrementedList);
-      await AsyncStorage.setItem(
-        'listOfItems',
-        incrementedList
-          .map((item) => JSON.stringify(item))
-          .join('#$&splitingSpot&$#'),
-      );
+      await saveToStorage('listOfItems', incrementedList);
     } else {
       if (Number(item.amount) < 1) {
         Alert.alert('Waattt', "The item's amount can't be negative");
@@ -109,12 +82,7 @@ const App = () => {
           return itemToCheck;
         });
         setListOfItems(decrementedList);
-        await AsyncStorage.setItem(
-          'listOfItems',
-          decrementedList
-            .map((item) => JSON.stringify(item))
-            .join('#$&splitingSpot&$#'),
-        );
+        await saveToStorage('listOfItems', decrementedList);
       }
     }
   };
@@ -152,15 +120,7 @@ const App = () => {
       Alert.alert('Hey!', 'please choose items first');
     } else {
       const filesToSend = chosenItems
-        .map((item) => {
-          const amount = Number(item.amount);
-          if (amount > 1) {
-            // return item.amount + ' ' + item.item + 's';
-            return item.amount + ' ' + item.item;
-          } else {
-            return item.amount + ' ' + item.item;
-          }
-        })
+        .map((item) => item.amount + ' ' + item.item)
         .join('\n');
       Linking.openURL(
         'whatsapp://send?text=' +
