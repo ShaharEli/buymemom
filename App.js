@@ -51,9 +51,13 @@ const App = () => {
 
   const handleSetListOfItems = async (item, method = 'post') => {
     if (method === 'delete') {
+      const filteredChosenItems = chosenItems.filter((prevItem) =>
+        filterFunction(prevItem, item),
+      );
       const filteresList = listOfItems.filter((prevItem) =>
         filterFunction(prevItem, item),
       );
+      setChosenItems(filteredChosenItems);
       setListOfItems(filteresList);
       await AsyncStorage.setItem(
         'listOfItems',
