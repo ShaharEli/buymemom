@@ -175,9 +175,9 @@ const App = () => {
         source={require('./assets/bg.jpeg')}
         style={{flex: 1, resizeMode: 'cover'}}>
         <MainContainer>
-          <TouchableOpacity>
+          <TouchableHighlight>
             <MainTitle>Buy Me Mom</MainTitle>
-          </TouchableOpacity>
+          </TouchableHighlight>
           <ButtonContainer
             onPress={handleEditMomsNumber}
             style={{marginTop: 30}}>
