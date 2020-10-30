@@ -130,7 +130,9 @@ const App = () => {
           previousItemsList = previousItemsList
             .split('#$&splitingSpot&$#')
             .map((item) => JSON.parse(item));
-          setListOfItems(previousItemsList);
+          setListOfItems(
+            Array.isArray(previousItemsList[0]) ? [] : previousItemsList,
+          );
         }
       } catch (e) {}
     })();
