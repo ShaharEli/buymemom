@@ -160,7 +160,7 @@ const App = () => {
         .join('\n');
       Linking.openURL(
         'whatsapp://send?text=' +
-          'Hi mom can you buy me this please:\n' +
+          'Hey mom, can you please buy me:\n' +
           filesToSend +
           '\nlove u ❤' +
           '&phone=' +

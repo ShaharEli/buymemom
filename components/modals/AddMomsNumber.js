@@ -64,10 +64,17 @@ export default function AddMomsNumber({
       if (momsNumber.length < 9) {
         throw new Error();
       }
-      await AsyncStorage.setItem('momsNumber', momsNumber);
-      setNumberModalVisible(false);
-      setMomsNumber(momsNumber);
-      Alert.alert('Yayy', 'Succesfully added moms number');
+      if (momsNumber.startsWith('05')) {
+        await AsyncStorage.setItem('momsNumber', '972' + momsNumber);
+        setNumberModalVisible(false);
+        setMomsNumber('972' + momsNumber);
+        Alert.alert('Yayy', 'Succesfully added moms number');
+      } else {
+        await AsyncStorage.setItem('momsNumber', momsNumber);
+        setNumberModalVisible(false);
+        setMomsNumber(momsNumber);
+        Alert.alert('Yayy', 'Succesfully added moms number');
+      }
     } catch (e) {
       setMomsNumber('');
       Alert.alert('Error', 'Please enter valid number');
