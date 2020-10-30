@@ -1,12 +1,5 @@
 import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  Alert,
-  Modal,
-  TextInput,
-  PermissionsAndroid,
-} from 'react-native';
+import {Text, Alert, Modal, TextInput, PermissionsAndroid} from 'react-native';
 import styled from 'styled-components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {selectContactPhone} from 'react-native-select-contact';

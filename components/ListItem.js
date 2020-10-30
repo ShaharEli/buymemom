@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
-import {View, Text} from 'react-native';
+import {View, TouchableOpacity} from 'react-native';
 import styled from 'styled-components';
 import Icon from 'react-native-vector-icons/Ionicons';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
 const filterFunction = (item, itemToCheck) => {
   if (item.item === itemToCheck.item) {
@@ -13,6 +14,7 @@ const filterFunction = (item, itemToCheck) => {
 };
 
 export default function ListItem({
+  changeAmount,
   item,
   setChosenItems,
   setListOfItems,
@@ -38,52 +40,60 @@ export default function ListItem({
 
   return (
     <MainItemListContainer selected={selected}>
+      <AmmountButtonsWrapper>
+        <TouchableOpacity onPress={() => changeAmount(item, 'increment')}>
+          <FontAwesomeIcon name="plus" color="white" size={18} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => changeAmount(item, 'decrement')}>
+          <FontAwesomeIcon name="minus" color="white" size={18} />
+        </TouchableOpacity>
+      </AmmountButtonsWrapper>
       <ListItemContainer onPress={handleSelect}>
-        <View>
-          <ListItemText>{item.amount}</ListItemText>
-        </View>
-        <View>
-          <ListItemText>{item.item}</ListItemText>
+        <ListItemText>{item.amount}</ListItemText>
+        <View style={{width: '90%'}}>
+          <ListItemText> {item.item}</ListItemText>
         </View>
       </ListItemContainer>
-      <Icon
-        name="trash"
-        size={24}
-        color="red"
-        onPress={handleRemove}
-        style={{marginLeft: 8, marginRight: 8}}
-      />
+      <View>
+        <Icon
+          name="trash"
+          size={24}
+          color="rgb(245,70,91)"
+          onPress={handleRemove}
+        />
+      </View>
     </MainItemListContainer>
   );
 }
 
 const ListItemContainer = styled.TouchableOpacity`
   flex-direction: row;
-  justify-content: space-around;
-  width: 90%;
-  shadow-color: red;
-  shadow-offset: 0px 2px;
-  shadow-opacity: 0.8;
-  shadow-radius: 12px;
-  elevation: 3;
+  width: 70%;
+  justify-content: space-between;
 `;
 
 const MainItemListContainer = styled.View`
   flex-direction: row;
-  width: 90%;
+  height: 65px;
   margin-top: 15px;
   align-items: center;
   background-color: ${(props) =>
-    props.selected ? 'green' : 'rgba(10,12,10,0.92)'};
-  padding: 15px;
-  border-radius: 50px;
+    props.selected ? 'green' : 'rgba(28,30,31,0.9)'};
+  padding: 5px 15px;
+  border-radius: 15px;
   align-self: center;
   padding-left: 15px;
 `;
 
+const AmmountButtonsWrapper = styled.View`
+  margin-left: 10px;
+  margin-right: 20px;
+  justify-content: space-around;
+  height: 100%;
+`;
 const ListItemText = styled.Text`
   color: white;
-  font-size: 15px;
+  font-size: 18px;
   font-style: italic;
   text-align: left;
 `;
