@@ -252,11 +252,10 @@ const ButtonContainer = styled.TouchableOpacity`
 
 const MainContainer = styled.SafeAreaView`
   flex: 1;
-  margin-top: 20px;
 `;
 
 const MainTitle = styled.Text`
-  margin-top: 20px;
+  padding: 15px;
   text-align: center;
   font-size: 40px;
   font-weight: bold;
