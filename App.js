@@ -61,7 +61,7 @@ const App = () => {
       setListOfItems(filteresList);
       await AsyncStorage.setItem(
         'listOfItems',
-        [filteresList]
+        filteresList
           .map((item) => JSON.stringify(item))
           .join('#$&splitingSpot&$#'),
       );
