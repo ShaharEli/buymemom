@@ -5,7 +5,7 @@ Do you know that feeling when your mom calls you from the supermarket and ask yo
 Directly send automated message from the app to WhatsApp.
 <br/><br/>
 
-## How it work
+## How it works
 - First of all, setup the contact you want the app to connect with.
 - Add some items you need or want to remember for later.
 - Select the items you need and change their amount according to your needs.
