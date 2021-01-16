@@ -8,11 +8,14 @@ target 'buymemom' do
 
   use_react_native!(:path => config["reactNativePath"])
 
-  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-async-storage/async-storage'
 
   pod 'RCTSelectContact', :path => '../node_modules/react-native-select-contact'
+
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+
+  pod 'lottie-react-native', :path => '../node_modules/lottie-react-native'
 
   target 'buymemomTests' do
     inherit! :complete

@@ -70,11 +70,13 @@ const MainItemListContainer = styled.View`
   margin-top: 15px;
   align-items: center;
   background-color: ${(props) =>
-    props.selected ? 'green' : 'rgba(28,30,31,0.9)'};
+    props.selected ? 'green' : 'rgba(10,60,91,0.9)'};
   padding: 5px 15px;
   border-radius: 15px;
   align-self: center;
   padding-left: 15px;
+  width: 90%;
+  max-width: 300px;
 `;
 
 const AmmountButtonsWrapper = styled.View`

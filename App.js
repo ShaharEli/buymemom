@@ -7,28 +7,16 @@
  */
 
 import React, {useState, useEffect} from 'react';
-import {
-  ImageBackground,
-  SafeAreaView,
-  ScrollView,
-  View,
-  Text,
-  TouchableOpacity,
-  Button,
-  Modal,
-  TouchableHighlight,
-  Alert,
-  Linking,
-} from 'react-native';
+import {ImageBackground, ScrollView, Alert, Linking} from 'react-native';
+import LottieView from 'lottie-react-native';
+import {Button, Appbar} from 'react-native-paper';
 import ListItem from './components/ListItem';
 import styled from 'styled-components';
-import Icon from 'react-native-vector-icons/Ionicons';
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import {MAX_WIDTH, MAX_HEIGHT} from './helpers/Helpers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AddItemModal from './components/modals/AddItemModal';
 import AddMomsNumber from './components/modals/AddMomsNumber';
-import {filterFunction, saveToStorage} from './helpers/Helpers';
+import {filterFunction, MAX_HEIGHT, saveToStorage} from './helpers/Helpers';
+import Loading from './components/Loading';
 
 const App = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -36,6 +24,7 @@ const App = () => {
   const [getNumberModalVisible, setNumberModalVisible] = useState(true);
   const [listOfItems, setListOfItems] = useState([]);
   const [chosenItems, setChosenItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const handleSetListOfItems = async (item, method = 'post') => {
     if (method === 'delete') {
@@ -106,7 +95,13 @@ const App = () => {
             Array.isArray(previousItemsList[0]) ? [] : previousItemsList,
           );
         }
-      } catch (e) {}
+      } catch (e) {
+      } finally {
+        (async () => {
+          await new Promise((resolve) => setTimeout(resolve, 1300));
+          setLoading(false);
+        })();
+      }
     })();
   }, []);
 
@@ -132,107 +127,85 @@ const App = () => {
       );
     }
   };
+  if (loading) return <Loading />;
 
   return (
     <>
-      <ImageBackground
-        source={require('./assets/bg.jpeg')}
-        style={{flex: 1, resizeMode: 'cover'}}>
-        <MainContainer>
-          <TouchableHighlight>
-            <MainTitle>Buy Me Mom</MainTitle>
-          </TouchableHighlight>
-          <ButtonContainer
-            onPress={handleEditMomsNumber}
-            style={{marginTop: 30}}>
-            <FontAwesomeIcon
-              name="phone"
-              color="white"
-              size={15}
-              style={{marginRight: 10}}
-            />
-
-            <ButtonTextChangeNumber>
-              Change Current Number
-            </ButtonTextChangeNumber>
-          </ButtonContainer>
-          <ButtonContainer onPress={() => setModalVisible(true)}>
-            <FontAwesomeIcon
-              name="plus"
-              size={30}
-              color="white"
-              style={{marginRight: 8, marginLeft: 8}}
-            />
-            <ButtonText color="white">New Item</ButtonText>
-          </ButtonContainer>
-
-          <AddItemModal
-            handleSetListOfItems={handleSetListOfItems}
-            modalVisible={modalVisible}
-            setModalVisible={setModalVisible}
-          />
-          <AddMomsNumber
-            getNumberModalVisible={getNumberModalVisible}
-            momsNumber={momsNumber}
-            setMomsNumber={setMomsNumber}
-            setNumberModalVisible={setNumberModalVisible}
-          />
-          <ScrollView style={{marginTop: 30}}>
-            {listOfItems.map((item, index) => {
-              return (
-                <ListItem
-                  key={index}
-                  changeAmount={changeAmount}
-                  item={item}
-                  setChosenItems={setChosenItems}
-                  setListOfItems={setListOfItems}
-                  handleSetListOfItems={handleSetListOfItems}
-                />
-              );
-            })}
-          </ScrollView>
-          <Button title="Send to mom" onPress={sendToMom} />
-        </MainContainer>
-      </ImageBackground>
+      <StyledAppBar>
+        <Appbar.Content title="Buy Me Mom" color="white" />
+        <Appbar.Action icon="plus" onPress={() => setModalVisible(true)} />
+        <Appbar.Action icon="phone" onPress={handleEditMomsNumber} />
+      </StyledAppBar>
+      <StyledLottieView
+        source={require('./assets/soothing-coloured-circle-animation.json')}
+        autoPlay
+        loop
+      />
+      <MainContainer>
+        <AddItemModal
+          handleSetListOfItems={handleSetListOfItems}
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+        />
+        <AddMomsNumber
+          getNumberModalVisible={getNumberModalVisible}
+          momsNumber={momsNumber}
+          setMomsNumber={setMomsNumber}
+          setNumberModalVisible={setNumberModalVisible}
+        />
+        <ScrollView style={{marginTop: 30}}>
+          {listOfItems.map((item, index) => {
+            return (
+              <ListItem
+                key={index}
+                changeAmount={changeAmount}
+                item={item}
+                setChosenItems={setChosenItems}
+                setListOfItems={setListOfItems}
+                handleSetListOfItems={handleSetListOfItems}
+              />
+            );
+          })}
+        </ScrollView>
+        <StyledBtn
+          icon="send"
+          mode="contained"
+          color="rgba(40,120,230,0.9)"
+          onPress={sendToMom}>
+          Send to mom
+        </StyledBtn>
+      </MainContainer>
+      {/* </ImageBackground> */}
+      {/* </LottieView> */}
     </>
   );
 };
 
 export default App;
 
-const ButtonContainer = styled.TouchableOpacity`
-  justify-content: space-around;
-  background-color: 'rgba(40,120,230,0.9)';
-  text-align: center;
-  flex-direction: row;
+const StyledBtn = styled(Button)`
+  width: 90%;
+  align-self: center;
+  margin-bottom: 10px;
   margin-top: 10px;
-  padding: 10px 10px;
-  align-self: flex-end;
-  border-bottom-left-radius: 50px;
-  border-top-left-radius: 50px;
-  background-color: ${(props) =>
-    props.bgColor ? props.bgColor : 'rgba(40,120,230,0.9)'};
+  max-width: 300px;
 `;
 
 const MainContainer = styled.SafeAreaView`
   flex: 1;
+  margin-top: 50px;
 `;
 
-const MainTitle = styled.Text`
-  padding: 15px;
-  text-align: center;
-  font-size: 40px;
-  font-weight: bold;
-  color: white;
+const StyledAppBar = styled(Appbar)`
+  position: absolute;
+  left: 0px;
+  z-index: 100;
+  right: 0px;
+  top: 0px;
   background-color: rgba(40, 120, 230, 0.9);
 `;
 
-const ButtonTextChangeNumber = styled.Text`
-  color: white;
-
-  font-size: 10px;
-`;
-const ButtonText = styled.Text`
-  color: ${(props) => (props.color ? props.color : 'white')};
-  font-size: 24px;
+const StyledLottieView = styled(LottieView)`
+  flex: 1;
+  margin-top: 100px;
 `;

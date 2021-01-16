@@ -1,19 +1,23 @@
 import React, {useState} from 'react';
-import {View, Text, Alert, Modal, TextInput, Button} from 'react-native';
+import {View, Text, Alert, Modal, Button, SafeAreaView} from 'react-native';
 import styled from 'styled-components';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {
+  TextInput as PTextInput,
+  Button as PButton,
+  Colors,
+} from 'react-native-paper';
+import {MAX_HEIGHT, MAX_WIDTH} from '../../helpers/Helpers';
 
 const modalTitleStyle = {
-  color: 'white',
-  fontWeight: 'bold',
-  fontSize: 40,
-  width: '98%',
+  fontSize: 35,
+  padding: 10,
+  color: Colors.grey600,
 };
 
 const exitIconStyle = {
   top: 5,
   position: 'absolute',
-  color: 'white',
   padding: 10,
   right: 10,
 };
@@ -37,55 +41,83 @@ export default function AddItemModal({
     }
   };
   return (
-    <Modal animationType="slide" transparent={true} visible={modalVisible}>
-      <>
-        <ModalAndExitContainer>
-          <Text style={modalTitleStyle}>Add new item</Text>
-          <Icon
-            name="close"
-            size={30}
-            style={exitIconStyle}
-            onPress={() => {
-              setModalVisible(!modalVisible);
-            }}
-          />
-          <ModalContainer>
-            <View>
-              <AddItemInput>
-                <TextInput
-                  placeholder="Enter item name..."
-                  value={itemTitle}
-                  onChangeText={(e) => setItemTitle(e)}></TextInput>
-              </AddItemInput>
-              <AddItemInput>
-                {/*text.replace(/[^0-9]/g, '')*/}
-                <TextInput
-                  placeholder="Enter amount..."
-                  value={itemAmount}
-                  onChangeText={(e) => setItemAmount(e)}></TextInput>
-              </AddItemInput>
-            </View>
-          </ModalContainer>
-          <Button title="Add item" onPress={handleSubmit} />
-        </ModalAndExitContainer>
-      </>
+    <Modal animationType="fade" transparent={false} visible={modalVisible}>
+      <ModalAndExitContainer>
+        <Text style={modalTitleStyle}>Add new item</Text>
+        <Icon
+          name="close"
+          size={30}
+          style={exitIconStyle}
+          color={Colors.grey600}
+          onPress={() => {
+            setModalVisible(!modalVisible);
+          }}
+        />
+        <ModalContainer>
+          <View>
+            <AddItemInput>
+              <PTextInput
+                underlineColor="rgba(40,120,230,1)"
+                selectionColor="rgba(40,120,230,1)"
+                label="Item name"
+                value={itemTitle}
+                theme={{colors: {primary: 'rgb(33, 151, 186)'}}}
+                onChangeText={(text) => setItemTitle(text)}
+              />
+            </AddItemInput>
+            <AddItemInput>
+              <PTextInput
+                underlineColor="rgba(40,120,230,1)"
+                selectionColor="rgba(40,120,230,1)"
+                label="Item amount"
+                value={itemAmount}
+                theme={{colors: {primary: 'rgb(33, 151, 186)'}}}
+                onChangeText={(text) => setItemAmount(text)}
+              />
+            </AddItemInput>
+          </View>
+        </ModalContainer>
+      </ModalAndExitContainer>
+      <MainBtn
+        icon="plus"
+        mode="contained"
+        color="rgba(40,120,230,1)"
+        onPress={handleSubmit}>
+        Add item
+      </MainBtn>
     </Modal>
   );
 }
 
-const AddItemInput = styled.TouchableHighlight`
-  border-radius: 50px;
+const AddItemInput = styled.View`
   background-color: #ededed;
   margin: 40px;
 `;
 
+const MainBtn = styled(PButton)`
+  width: 90%;
+  align-self: center;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  max-width: 300px;
+`;
+
 const ModalAndExitContainer = styled.SafeAreaView`
-  background-color: #525252;
-  flex: 1;
-  opacity: 0.7;
+  background-color: #e8e7f4;
+  height: ${MAX_HEIGHT * 0.8 + 'px'};
+  width: ${MAX_WIDTH * 0.9 + 'px'};
+  align-self: center;
+  margin: auto;
+  border-radius: 15px;
 `;
 
 const ModalContainer = styled.View`
   flex: 1;
   justify-content: center;
+`;
+
+const StyledContainer = styled.SafeAreaView`
+  flex: 1;
+  background-color: #e8e7f4;
+  opacity: 0.4;
 `;
